@@ -1,54 +1,72 @@
-// pages/api/expenses/[id].ts
-import { NextApiRequest, NextApiResponse } from "next"
-import { Expense } from "../../../types/expense"
+import { getExpenseById, updateExpense, deleteExpense } from "@/lib/expenses"
+import type { NextApiRequest, NextApiResponse } from "next"
 
-let expenses: Expense[] = [
-  {
-    id: 1,
-    amount: 1200,
-    category: "食費",
-    description: "ランチ",
-    date: "2024-11-29",
-  },
-  {
-    id: 2,
-    amount: 1500,
-    category: "交通費",
-    description: "電車",
-    date: "2024-11-28",
-  },
-]
+const handler = (req: NextApiRequest, res: NextApiResponse) => {
+  const { method } = req
+  const { id } = req.query // URLパラメータから `id` を取得
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query
-  const expense = expenses.find((exp) => exp.id === parseInt(id as string))
-
-  if (!expense) {
-    return res.status(404).json({ message: "支出が見つかりません" })
+  // `id` がなければ 400 エラーを返す
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: "Invalid or missing ID" })
   }
 
-  if (req.method === "GET") {
-    return res.status(200).json(expense)
+  // `id` を数値に変換
+  const expenseId = parseInt(id as string, 10)
+
+  switch (method) {
+    case "GET":
+      // GETリクエスト（指定したIDの支出詳細を取得）
+      const expense = getExpenseById(expenseId)
+      if (!expense) {
+        return res
+          .status(404)
+          .json({ error: `Expense with ID ${expenseId} not found` })
+      }
+      res.status(200).json(expense)
+      break
+
+    case "PUT":
+      // PUTリクエスト（指定したIDの支出を更新）
+      const { amount, category, description, date } = req.body
+
+      if (!amount || !category || !description || !date) {
+        return res.status(400).json({
+          error:
+            "All fields (amount, category, description, date) are required",
+        })
+      }
+
+      const updatedExpense = updateExpense(expenseId, {
+        amount,
+        category,
+        description,
+        date,
+      })
+      if (!updatedExpense) {
+        return res
+          .status(404)
+          .json({ error: `Expense with ID ${expenseId} not found` })
+      }
+
+      res.status(200).json(updatedExpense)
+      break
+
+    case "DELETE":
+      // DELETEリクエスト（指定したIDの支出を削除）
+      const deletedExpense = deleteExpense(expenseId)
+      if (!deletedExpense) {
+        return res
+          .status(404)
+          .json({ error: `Expense with ID ${expenseId} not found` })
+      }
+
+      res.status(200).json({ message: `Expense with ID ${expenseId} deleted` })
+      break
+
+    default:
+      res.status(405).json({ error: "Method Not Allowed" })
+      break
   }
-
-  if (req.method === "PUT") {
-    // 支出の更新
-    const { amount, category, description, date }: Expense = req.body
-
-    expense.amount = amount || expense.amount
-    expense.category = category || expense.category
-    expense.description = description || expense.description
-    expense.date = date || expense.date
-
-    return res.status(200).json(expense)
-  }
-
-  if (req.method === "DELETE") {
-    // 支出の削除
-    expenses = expenses.filter((exp) => exp.id !== parseInt(id as string))
-
-    return res.status(200).json({ message: "支出が削除されました" })
-  }
-
-  return res.status(405).json({ message: "Method Not Allowed" })
 }
+
+export default handler

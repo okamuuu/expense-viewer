@@ -1,5 +1,10 @@
-import { useState } from "react"
-import { useQuery, useMutation, keepPreviousData } from "@tanstack/react-query"
+import { useState, useEffect } from "react"
+import {
+  useQueryClient,
+  useQuery,
+  useMutation,
+  keepPreviousData,
+} from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -44,15 +49,20 @@ const expenseSchema = z.object({
   date: z.string().min(1, "日付は必須です"),
 })
 
+const formatDate = (date: Date) => date.toISOString().split("T")[0] // yyyy-mm-dd 形式
+
 const ExpensesPage = () => {
   const [page, setPage] = useState(1)
   const limit = 5
+  const [selectedDate, setSelectedDate] = useState(formatDate(new Date())) // 本日の日付を管理
+
+  const queryClient = useQueryClient()
 
   // 支出データとページネーションを取得
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["expenses", { page, limit }],
     queryFn: () => fetchExpenses({ page, limit }),
-    placeholderData: keepPreviousData,
+    keepPreviousData: true, // 前のデータを保持する
   })
 
   // フォームのセットアップ
@@ -63,14 +73,23 @@ const ExpensesPage = () => {
     reset,
   } = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      date: selectedDate, // 初期値として本日の日付をセット
+    },
   })
 
   // 支出を作成するミューテーション
   const mutation = useMutation({
     mutationFn: createExpense,
     onSuccess: () => {
-      reset() // フォームのリセット
+      reset({
+        amount: 0,
+        category: "",
+        description: "",
+        date: formatDate(new Date()), // フォームリセット後も日付を本日に戻す
+      })
       setPage(1) // 最初のページに戻す
+      queryClient.invalidateQueries({ queryKey: ["expenses"] })
     },
     onError: (error: unknown) => {
       console.error("Error creating expense:", (error as Error).message)
