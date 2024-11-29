@@ -2,6 +2,7 @@ import { useState, useMemo } from "react"
 import axios from "axios"
 import toast from "react-hot-toast"
 import { format } from "date-fns"
+import { DotLoader } from "react-spinners"
 
 import {
   useQueryClient,
@@ -13,13 +14,20 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, DonutChart } from "@tremor/react"
-import { Pager, Expense } from "@/types"
+
+import type { AxiosResponse } from "axios"
+import type { ReactNode } from "react"
+import type { Pager, Expense } from "@/types"
 
 interface ExpenseFormData {
   amount: number
   category: string
   description: string
   date: string
+}
+
+const sleep = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 const fetchExpenses = async ({
@@ -30,9 +38,11 @@ const fetchExpenses = async ({
   limit: number
 }) => {
   try {
-    const response = await axios.get("/api/expenses", {
-      params: { page, limit }, // クエリパラメータを渡す
-    })
+    const response: AxiosResponse<{ expenses: Expense[]; pager: Pager }> =
+      await axios.get("/api/expenses", {
+        params: { page, limit }, // クエリパラメータを渡す
+      })
+    await sleep(1500)
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -57,6 +67,7 @@ const createExpense = async (expense: ExpenseFormData) => {
         "Content-Type": "application/json",
       },
     })
+    await sleep(3000)
     toast.success("success")
     return response.data
   } catch (error) {
@@ -81,13 +92,33 @@ const expenseSchema = z.object({
 
 const formatDate = (date: Date) => format(date, "yyyy-MM-dd")
 
+const Modal = ({ children }: { children: ReactNode }) => (
+  <div className="relative z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div className="fixed inset-0 z-10 overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center text-center">
+        {children}
+      </div>
+    </div>
+  </div>
+)
+
+const Loader = () => (
+  <Modal>
+    <DotLoader color="#222222" size={60} speedMultiplier={3} />
+  </Modal>
+)
+
 const ExpensesPage = () => {
   const [page, setPage] = useState(1)
   const limit = 5
 
   const queryClient = useQueryClient()
   // 支出データとページネーションを取得
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isPlaceholderData, isError, error } = useQuery<{
+    expenses: Expense[]
+    pager: Pager
+  }>({
     queryKey: ["expenses", { page, limit }],
     queryFn: () => fetchExpenses({ page, limit }),
     placeholderData: keepPreviousData,
@@ -110,7 +141,7 @@ const ExpensesPage = () => {
   })
 
   // 支出を作成するミューテーション
-  const mutation = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: createExpense,
     onSuccess: () => {
       reset() // フォームのリセット
@@ -118,15 +149,24 @@ const ExpensesPage = () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] })
     },
     onError: (error: unknown) => {
+      toast.error((error as Error).message)
       console.error("Error creating expense:", (error as Error).message)
     },
   })
 
   const onSubmit = (data: ExpenseFormData) => {
-    mutation.mutate(data)
+    mutate(data)
   }
 
-  const { expenses, pager }: { expenses: Expense[]; pager: Pager } = data!
+  const { expenses, pager } = data ?? {
+    expenses: [],
+    pager: {
+      currentPage: 1,
+      totalPages: 1,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    },
+  }
 
   // カテゴリ別の支出額を集計
   const categoryData = useMemo(
@@ -144,11 +184,11 @@ const ExpensesPage = () => {
     [expenses],
   )
 
-  if (isLoading) return <div>読み込み中...</div>
+  if (isLoading) return <Loader />
   if (isError) return <div>エラー: {(error as Error).message}</div>
 
   // PieChart用のデータ形式に変換
-  const chartCategoryData = Object.entries(categoryData).map(
+  const chartCategoryData = Object.entries(categoryData || {}).map(
     ([category, amount]) => ({
       name: category,
       value: amount,
@@ -156,31 +196,29 @@ const ExpensesPage = () => {
   )
 
   return (
-    <div className="container mx-auto flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold mb-4">支出一覧</h1>
+    <>
+      <div className="container mx-auto flex flex-col gap-4">
+        <h1 className="text-2xl font-semibold mb-4">支出一覧</h1>
 
-      {/* ダッシュボードカード */}
-      <Card className="mx-auto">
-        <div className="p-8">
-          <h2>支出の推移</h2>
+        {/* ダッシュボードカード */}
+        <Card className="mx-auto">
+          <div className="p-8">
+            <h2>支出の推移</h2>
 
-          <DonutChart
-            className="h-80"
-            data={chartCategoryData}
-            variant="donut"
-            valueFormatter={(number: number) =>
-              `${Intl.NumberFormat("jp").format(number).toString()}円`
-            }
-            onValueChange={(v) => console.log(v)}
-          />
-        </div>
-      </Card>
+            <DonutChart
+              className="h-80"
+              data={chartCategoryData}
+              variant="donut"
+              valueFormatter={(number: number) =>
+                `${Intl.NumberFormat("jp").format(number).toString()}円`
+              }
+              onValueChange={(v) => console.log(v)}
+            />
+          </div>
+        </Card>
 
-      {/* 支出一覧 */}
-      <Card className="mx-auto">
-        {expenses.length === 0 ? (
-          <p>支出がありません。</p>
-        ) : (
+        {/* 支出一覧 */}
+        <Card className="mx-auto">
           <table className="min-w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
@@ -191,7 +229,7 @@ const ExpensesPage = () => {
               </tr>
             </thead>
             <tbody>
-              {expenses.map((expense) => (
+              {expenses?.map((expense) => (
                 <tr key={expense.id} className="border-t">
                   <td className="px-4 py-2">{expense.amount} 円</td>
                   <td className="px-4 py-2">{expense.category}</td>
@@ -201,108 +239,111 @@ const ExpensesPage = () => {
               ))}
             </tbody>
           </table>
-        )}
 
-        {/* ページネーション */}
-        <div className="flex justify-between mt-4">
-          <button
-            aria-label="Previous page"
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-            disabled={!pager.hasPreviousPage}
-          >
-            前へ
-          </button>
+          {/* ページネーション */}
+          <div className="flex justify-between mt-4">
+            <button
+              aria-label="Previous page"
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+              disabled={!pager.hasPreviousPage}
+            >
+              前へ
+            </button>
 
-          <span>
-            ページ {pager.currentPage} / {pager.totalPages}
-          </span>
+            <span>
+              ページ {pager.currentPage} / {pager.totalPages}
+            </span>
 
-          <button
-            aria-label="Next page"
-            onClick={() =>
-              setPage((prev) => Math.min(prev + 1, pager.totalPages))
-            }
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-            disabled={!pager.hasNextPage}
-          >
-            次へ
-          </button>
-        </div>
-      </Card>
-
-      {/* 新規支出作成フォーム */}
-      <Card className="mx-auto">
-        <h2 className="text-xl mt-8 mb-4">新規支出の追加</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label htmlFor="amount" className="block">
-              金額
-            </label>
-            <input
-              {...register("amount")}
-              id="amount"
-              type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded"
-            />
-            {errors.amount && (
-              <span className="text-red-500">{errors.amount.message}</span>
-            )}
+            <button
+              aria-label="Next page"
+              onClick={() =>
+                setPage((prev) => Math.min(prev + 1, pager.totalPages))
+              }
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+              disabled={!pager.hasNextPage}
+            >
+              次へ
+            </button>
           </div>
+        </Card>
 
-          <div>
-            <label htmlFor="category" className="block">
-              カテゴリ
-            </label>
-            <input
-              {...register("category")}
-              id="category"
-              className="w-full px-4 py-2 border border-gray-300 rounded"
-            />
-            {errors.category && (
-              <span className="text-red-500">{errors.category.message}</span>
-            )}
-          </div>
+        {/* 新規支出作成フォーム */}
+        <Card className="mx-auto">
+          <h2 className="text-xl mt-8 mb-4">新規支出の追加</h2>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label htmlFor="amount" className="block">
+                金額
+              </label>
+              <input
+                {...register("amount")}
+                id="amount"
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded"
+              />
+              {errors.amount && (
+                <span className="text-red-500">{errors.amount.message}</span>
+              )}
+            </div>
 
-          <div>
-            <label htmlFor="description" className="block">
-              説明
-            </label>
-            <input
-              {...register("description")}
-              id="description"
-              className="w-full px-4 py-2 border border-gray-300 rounded"
-            />
-            {errors.description && (
-              <span className="text-red-500">{errors.description.message}</span>
-            )}
-          </div>
+            <div>
+              <label htmlFor="category" className="block">
+                カテゴリ
+              </label>
+              <input
+                {...register("category")}
+                id="category"
+                className="w-full px-4 py-2 border border-gray-300 rounded"
+              />
+              {errors.category && (
+                <span className="text-red-500">{errors.category.message}</span>
+              )}
+            </div>
 
-          <div>
-            <label htmlFor="date" className="block">
-              日付
-            </label>
-            <input
-              {...register("date")}
-              id="date"
-              type="date"
-              className="w-full px-4 py-2 border border-gray-300 rounded"
-            />
-            {errors.date && (
-              <span className="text-red-500">{errors.date.message}</span>
-            )}
-          </div>
+            <div>
+              <label htmlFor="description" className="block">
+                説明
+              </label>
+              <input
+                {...register("description")}
+                id="description"
+                className="w-full px-4 py-2 border border-gray-300 rounded"
+              />
+              {errors.description && (
+                <span className="text-red-500">
+                  {errors.description.message}
+                </span>
+              )}
+            </div>
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded"
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "送信中..." : "支出を追加"}
-          </button>
-        </form>
-      </Card>
-    </div>
+            <div>
+              <label htmlFor="date" className="block">
+                日付
+              </label>
+              <input
+                {...register("date")}
+                id="date"
+                type="date"
+                className="w-full px-4 py-2 border border-gray-300 rounded"
+              />
+              {errors.date && (
+                <span className="text-red-500">{errors.date.message}</span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="px-4 py-2 bg-green-500 text-white rounded"
+              disabled={isPending}
+            >
+              {isPending ? "送信中..." : "支出を追加"}
+            </button>
+          </form>
+        </Card>
+      </div>
+      {(isPlaceholderData || isPending) && <Loader />}
+    </>
   )
 }
 
