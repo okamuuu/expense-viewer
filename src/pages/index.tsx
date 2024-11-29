@@ -35,13 +35,17 @@ const fetchExpenses = async ({
     })
     return response.data
   } catch (error) {
-    // Axiosのエラーハンドリング
     if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch expenses"
+      toast.error(errorMessage)
       throw new Error(
         error.response?.data?.message || "Failed to fetch expenses",
       )
     } else {
-      throw new Error("An unexpected error occurred")
+      const unknownErrorMessage = "An unexpected error occurred"
+      toast.error(unknownErrorMessage)
+      throw new Error(unknownErrorMessage)
     }
   }
 }
@@ -203,6 +207,7 @@ const ExpensesPage = () => {
           {/* ページネーション */}
           <div className="flex justify-between mt-4">
             <button
+              aria-label="Previous page"
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               className="px-4 py-2 bg-blue-500 text-white rounded"
               disabled={!pager.hasPreviousPage}
@@ -215,6 +220,7 @@ const ExpensesPage = () => {
             </span>
 
             <button
+              aria-label="Next page"
               onClick={() =>
                 setPage((prev) => Math.min(prev + 1, pager.totalPages))
               }
