@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react"
 import axios from "axios"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { format } from "date-fns"
 
 import {
@@ -156,158 +156,153 @@ const ExpensesPage = () => {
   )
 
   return (
-    <>
-      <div className="container mx-auto flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold mb-4">支出一覧</h1>
+    <div className="container mx-auto flex flex-col gap-4">
+      <h1 className="text-2xl font-semibold mb-4">支出一覧</h1>
 
-        {/* ダッシュボードカード */}
-        <Card className="mx-auto">
-          <div className="p-8">
-            <h2>支出の推移</h2>
+      {/* ダッシュボードカード */}
+      <Card className="mx-auto">
+        <div className="p-8">
+          <h2>支出の推移</h2>
 
-            <DonutChart
-              className="h-80"
-              data={chartCategoryData}
-              variant="donut"
-              valueFormatter={(number: number) =>
-                `${Intl.NumberFormat("jp").format(number).toString()}円`
-              }
-              onValueChange={(v) => console.log(v)}
-            />
-          </div>
-        </Card>
+          <DonutChart
+            className="h-80"
+            data={chartCategoryData}
+            variant="donut"
+            valueFormatter={(number: number) =>
+              `${Intl.NumberFormat("jp").format(number).toString()}円`
+            }
+            onValueChange={(v) => console.log(v)}
+          />
+        </div>
+      </Card>
 
-        {/* 支出一覧 */}
-        <Card className="mx-auto">
-          {expenses.length === 0 ? (
-            <p>支出がありません。</p>
-          ) : (
-            <table className="min-w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-left">金額</th>
-                  <th className="px-4 py-2 text-left">カテゴリ</th>
-                  <th className="px-4 py-2 text-left">説明</th>
-                  <th className="px-4 py-2 text-left">日付</th>
+      {/* 支出一覧 */}
+      <Card className="mx-auto">
+        {expenses.length === 0 ? (
+          <p>支出がありません。</p>
+        ) : (
+          <table className="min-w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-4 py-2 text-left">金額</th>
+                <th className="px-4 py-2 text-left">カテゴリ</th>
+                <th className="px-4 py-2 text-left">説明</th>
+                <th className="px-4 py-2 text-left">日付</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.map((expense) => (
+                <tr key={expense.id} className="border-t">
+                  <td className="px-4 py-2">{expense.amount} 円</td>
+                  <td className="px-4 py-2">{expense.category}</td>
+                  <td className="px-4 py-2">{expense.description}</td>
+                  <td className="px-4 py-2">{expense.date}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {expenses.map((expense) => (
-                  <tr key={expense.id} className="border-t">
-                    <td className="px-4 py-2">{expense.amount} 円</td>
-                    <td className="px-4 py-2">{expense.category}</td>
-                    <td className="px-4 py-2">{expense.description}</td>
-                    <td className="px-4 py-2">{expense.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+              ))}
+            </tbody>
+          </table>
+        )}
 
-          {/* ページネーション */}
-          <div className="flex justify-between mt-4">
-            <button
-              aria-label="Previous page"
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              disabled={!pager.hasPreviousPage}
-            >
-              前へ
-            </button>
+        {/* ページネーション */}
+        <div className="flex justify-between mt-4">
+          <button
+            aria-label="Previous page"
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+            disabled={!pager.hasPreviousPage}
+          >
+            前へ
+          </button>
 
-            <span>
-              ページ {pager.currentPage} / {pager.totalPages}
-            </span>
+          <span>
+            ページ {pager.currentPage} / {pager.totalPages}
+          </span>
 
-            <button
-              aria-label="Next page"
-              onClick={() =>
-                setPage((prev) => Math.min(prev + 1, pager.totalPages))
-              }
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              disabled={!pager.hasNextPage}
-            >
-              次へ
-            </button>
+          <button
+            aria-label="Next page"
+            onClick={() =>
+              setPage((prev) => Math.min(prev + 1, pager.totalPages))
+            }
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+            disabled={!pager.hasNextPage}
+          >
+            次へ
+          </button>
+        </div>
+      </Card>
+
+      {/* 新規支出作成フォーム */}
+      <Card className="mx-auto">
+        <h2 className="text-xl mt-8 mb-4">新規支出の追加</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label htmlFor="amount" className="block">
+              金額
+            </label>
+            <input
+              {...register("amount")}
+              id="amount"
+              type="text"
+              className="w-full px-4 py-2 border border-gray-300 rounded"
+            />
+            {errors.amount && (
+              <span className="text-red-500">{errors.amount.message}</span>
+            )}
           </div>
-        </Card>
 
-        {/* 新規支出作成フォーム */}
-        <Card className="mx-auto">
-          <h2 className="text-xl mt-8 mb-4">新規支出の追加</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label htmlFor="amount" className="block">
-                金額
-              </label>
-              <input
-                {...register("amount")}
-                id="amount"
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded"
-              />
-              {errors.amount && (
-                <span className="text-red-500">{errors.amount.message}</span>
-              )}
-            </div>
+          <div>
+            <label htmlFor="category" className="block">
+              カテゴリ
+            </label>
+            <input
+              {...register("category")}
+              id="category"
+              className="w-full px-4 py-2 border border-gray-300 rounded"
+            />
+            {errors.category && (
+              <span className="text-red-500">{errors.category.message}</span>
+            )}
+          </div>
 
-            <div>
-              <label htmlFor="category" className="block">
-                カテゴリ
-              </label>
-              <input
-                {...register("category")}
-                id="category"
-                className="w-full px-4 py-2 border border-gray-300 rounded"
-              />
-              {errors.category && (
-                <span className="text-red-500">{errors.category.message}</span>
-              )}
-            </div>
+          <div>
+            <label htmlFor="description" className="block">
+              説明
+            </label>
+            <input
+              {...register("description")}
+              id="description"
+              className="w-full px-4 py-2 border border-gray-300 rounded"
+            />
+            {errors.description && (
+              <span className="text-red-500">{errors.description.message}</span>
+            )}
+          </div>
 
-            <div>
-              <label htmlFor="description" className="block">
-                説明
-              </label>
-              <input
-                {...register("description")}
-                id="description"
-                className="w-full px-4 py-2 border border-gray-300 rounded"
-              />
-              {errors.description && (
-                <span className="text-red-500">
-                  {errors.description.message}
-                </span>
-              )}
-            </div>
+          <div>
+            <label htmlFor="date" className="block">
+              日付
+            </label>
+            <input
+              {...register("date")}
+              id="date"
+              type="date"
+              className="w-full px-4 py-2 border border-gray-300 rounded"
+            />
+            {errors.date && (
+              <span className="text-red-500">{errors.date.message}</span>
+            )}
+          </div>
 
-            <div>
-              <label htmlFor="date" className="block">
-                日付
-              </label>
-              <input
-                {...register("date")}
-                id="date"
-                type="date"
-                className="w-full px-4 py-2 border border-gray-300 rounded"
-              />
-              {errors.date && (
-                <span className="text-red-500">{errors.date.message}</span>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? "送信中..." : "支出を追加"}
-            </button>
-          </form>
-        </Card>
-      </div>
-      <Toaster />
-    </>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-500 text-white rounded"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "送信中..." : "支出を追加"}
+          </button>
+        </form>
+      </Card>
+    </div>
   )
 }
 
