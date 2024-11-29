@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import axios from "axios"
 import toast, { Toaster } from "react-hot-toast"
 import { format } from "date-fns"
@@ -121,22 +121,26 @@ const ExpensesPage = () => {
     mutation.mutate(data)
   }
 
-  if (isLoading) return <div>読み込み中...</div>
-  if (isError) return <div>エラー: {(error as Error).message}</div>
-
   const { expenses, pager }: { expenses: Expense[]; pager: Pager } = data!
 
   // カテゴリ別の支出額を集計
-  const categoryData = expenses.reduce(
-    (acc, expense) => {
-      if (!acc[expense.category]) {
-        acc[expense.category] = 0
-      }
-      acc[expense.category] += expense.amount
-      return acc
-    },
-    {} as { [key: string]: number },
+  const categoryData = useMemo(
+    () =>
+      expenses.reduce(
+        (acc, expense) => {
+          if (!acc[expense.category]) {
+            acc[expense.category] = 0
+          }
+          acc[expense.category] += expense.amount
+          return acc
+        },
+        {} as { [key: string]: number },
+      ),
+    [expenses],
   )
+
+  if (isLoading) return <div>読み込み中...</div>
+  if (isError) return <div>エラー: {(error as Error).message}</div>
 
   // PieChart用のデータ形式に変換
   const chartCategoryData = Object.entries(categoryData).map(
