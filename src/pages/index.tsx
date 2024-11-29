@@ -1,6 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 import toast, { Toaster } from "react-hot-toast"
+import { format } from "date-fns"
 
 import {
   useQueryClient,
@@ -74,7 +75,7 @@ const expenseSchema = z.object({
   date: z.string().min(1, "日付は必須です"),
 })
 
-const formatDate = (date: Date) => date.toISOString().split("T")[0] // yyyy-mm-dd 形式
+const formatDate = (date: Date) => format(date, "yyyy-MM-dd")
 
 const ExpensesPage = () => {
   const [page, setPage] = useState(1)
