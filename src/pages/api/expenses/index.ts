@@ -1,72 +1,129 @@
-// pages/api/expenses/index.ts
 import { NextApiRequest, NextApiResponse } from "next"
-import { Expense } from "../../../types/expense"
 
-const expenses: Expense[] = [
+type Expense = {
+  id: number
+  amount: number
+  category: string
+  description: string
+  date: string
+}
+
+const mockExpenses: Expense[] = [
   {
     id: 1,
-    amount: 1200,
-    category: "食費",
-    description: "ランチ",
-    date: "2024-11-29",
+    amount: 5000,
+    category: "Food",
+    description: "Lunch",
+    date: "2024-01-01",
   },
   {
     id: 2,
     amount: 1500,
-    category: "交通費",
-    description: "電車",
-    date: "2024-11-28",
+    category: "Transport",
+    description: "Train Ticket",
+    date: "2024-01-02",
   },
+  {
+    id: 3,
+    amount: 800,
+    category: "Food",
+    description: "Snack",
+    date: "2024-01-03",
+  },
+  {
+    id: 4,
+    amount: 2000,
+    category: "Entertainment",
+    description: "Movie",
+    date: "2024-01-04",
+  },
+  {
+    id: 5,
+    amount: 1200,
+    category: "Food",
+    description: "Coffee",
+    date: "2024-01-05",
+  },
+  {
+    id: 6,
+    amount: 1000,
+    category: "Transport",
+    description: "Bus",
+    date: "2024-01-06",
+  },
+  {
+    id: 7,
+    amount: 4000,
+    category: "Food",
+    description: "Dinner",
+    date: "2024-01-07",
+  },
+  {
+    id: 8,
+    amount: 3000,
+    category: "Entertainment",
+    description: "Concert",
+    date: "2024-01-08",
+  },
+  {
+    id: 9,
+    amount: 700,
+    category: "Food",
+    description: "Snack",
+    date: "2024-01-09",
+  },
+  {
+    id: 10,
+    amount: 500,
+    category: "Transport",
+    description: "Metro",
+    date: "2024-01-10",
+  },
+  {
+    id: 11,
+    amount: 1500,
+    category: "Food",
+    description: "Lunch",
+    date: "2024-01-11",
+  },
+  {
+    id: 12,
+    amount: 2500,
+    category: "Transport",
+    description: "Taxi",
+    date: "2024-01-12",
+  },
+  // More items...
 ]
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "GET") {
-    // 支出の一覧取得
-    const { start_date, end_date, category, limit = 10 } = req.query
+const handler = (req: NextApiRequest, res: NextApiResponse) => {
+  const { page = 1, limit = 5 } = req.query
 
-    let filteredExpenses = expenses
+  // ページ番号とリミットを整数に変換
+  const currentPage = parseInt(page as string, 10)
+  const itemsPerPage = parseInt(limit as string, 10)
 
-    if (start_date) {
-      filteredExpenses = filteredExpenses.filter(
-        (exp) => new Date(exp.date) >= new Date(start_date as string),
-      )
-    }
+  // ページネーションの計算
+  const offset = (currentPage - 1) * itemsPerPage
+  const pagedExpenses = mockExpenses.slice(offset, offset + itemsPerPage)
 
-    if (end_date) {
-      filteredExpenses = filteredExpenses.filter(
-        (exp) => new Date(exp.date) <= new Date(end_date as string),
-      )
-    }
+  // ページネーション情報の生成
+  const totalItems = mockExpenses.length
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
 
-    if (category) {
-      filteredExpenses = filteredExpenses.filter(
-        (exp) => exp.category === category,
-      )
-    }
-
-    return res
-      .status(200)
-      .json({ expenses: filteredExpenses.slice(0, Number(limit)) })
-  } else if (req.method === "POST") {
-    // 支出の追加
-    const { amount, category, description, date }: Expense = req.body
-
-    if (!amount || !category) {
-      return res.status(400).json({ message: "amount と category は必須です" })
-    }
-
-    const newExpense: Expense = {
-      id: expenses.length + 1,
-      amount,
-      category,
-      description: description || "",
-      date: date || new Date().toISOString().split("T")[0], // デフォルトで今日の日付
-    }
-
-    expenses.push(newExpense)
-
-    return res.status(201).json(newExpense)
-  } else {
-    return res.status(405).json({ message: "Method Not Allowed" })
+  const response = {
+    expenses: pagedExpenses,
+    pager: {
+      currentPage,
+      totalPages,
+      totalItems,
+      itemsPerPage,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    },
   }
+
+  res.status(200).json(response)
 }
+
+export default handler
