@@ -1,4 +1,5 @@
 import { useState } from "react"
+import axios from "axios"
 import {
   useQueryClient,
   useQuery,
@@ -25,21 +26,41 @@ const fetchExpenses = async ({
   page: number
   limit: number
 }) => {
-  const res = await fetch(`/api/expenses?page=${page}&limit=${limit}`)
-  if (!res.ok) throw new Error("Failed to fetch expenses")
-  return res.json()
+  try {
+    const response = await axios.get("/api/expenses", {
+      params: { page, limit }, // クエリパラメータを渡す
+    })
+    return response.data
+  } catch (error) {
+    // Axiosのエラーハンドリング
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch expenses",
+      )
+    } else {
+      throw new Error("An unexpected error occurred")
+    }
+  }
 }
 
 const createExpense = async (expense: ExpenseFormData) => {
-  const res = await fetch("/api/expenses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(expense),
-  })
-  if (!res.ok) throw new Error("Failed to create expense")
-  return res.json()
+  try {
+    const response = await axios.post("/api/expenses", expense, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    return response.data
+  } catch (error) {
+    // Axiosのエラーハンドリング
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || "Failed to create expense",
+      )
+    } else {
+      throw new Error("An unexpected error occurred")
+    }
+  }
 }
 
 // Zodでフォームのバリデーションを定義
