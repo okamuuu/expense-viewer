@@ -203,7 +203,7 @@ const ExpensesPage = () => {
           {/* ページネーション */}
           <div className="flex justify-between mt-4">
             <button
-              onClick={() => setPage(page > 1 ? page - 1 : page)}
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               className="px-4 py-2 bg-blue-500 text-white rounded"
               disabled={!pager.hasPreviousPage}
             >
@@ -215,7 +215,9 @@ const ExpensesPage = () => {
             </span>
 
             <button
-              onClick={() => setPage(page < pager.totalPages ? page + 1 : page)}
+              onClick={() =>
+                setPage((prev) => Math.min(prev + 1, pager.totalPages))
+              }
               className="px-4 py-2 bg-blue-500 text-white rounded"
               disabled={!pager.hasNextPage}
             >
