@@ -99,6 +99,7 @@ const ExpensesPage = () => {
     reset,
   } = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
+    mode: "onChange",
     defaultValues: {
       date: todayDate,
     },
