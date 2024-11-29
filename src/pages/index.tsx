@@ -13,7 +13,17 @@ import {
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Card, DonutChart } from "@tremor/react"
+import {
+  Button,
+  Card,
+  DonutChart,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+} from "@tremor/react"
 
 import type { AxiosResponse } from "axios"
 import type { ReactNode } from "react"
@@ -42,6 +52,28 @@ const fetchExpenses = async ({
       await axios.get("/api/expenses", {
         params: { page, limit }, // クエリパラメータを渡す
       })
+    await sleep(1500)
+    return response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch expenses"
+      toast.error(errorMessage)
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch expenses",
+      )
+    } else {
+      const unknownErrorMessage = "An unexpected error occurred"
+      toast.error(unknownErrorMessage)
+      throw new Error(unknownErrorMessage)
+    }
+  }
+}
+
+const fetchSummary = async () => {
+  try {
+    const response: AxiosResponse<{ summary: { [key: string]: number } }> =
+      await axios.get("/api/expenses/summary")
     await sleep(1500)
     return response.data
   } catch (error) {
@@ -109,9 +141,49 @@ const Loader = () => (
   </Modal>
 )
 
+const ChartContainer = () => {
+  // 支出データとページネーションを取得
+  const { data, isLoading, isError } = useQuery<{
+    summary: {
+      [key: string]: number
+    }
+  }>({
+    queryKey: ["summary"],
+    queryFn: () => fetchSummary(),
+    placeholderData: keepPreviousData,
+  })
+
+  // PieChart用のデータ形式に変換
+  const chartCategoryData = Object.entries(data?.summary || {}).map(
+    ([category, amount]) => ({
+      name: category,
+      value: amount,
+    }),
+  )
+
+  if (isError) return <div>error...</div>
+
+  return (
+    <>
+      <div className="p-8">
+        <DonutChart
+          className="h-80"
+          data={chartCategoryData}
+          variant="donut"
+          valueFormatter={(number: number) =>
+            `${Intl.NumberFormat("jp").format(number).toString()} JPY`
+          }
+          onValueChange={(v) => console.log(v)}
+        />
+      </div>
+      {isLoading && <Loader />}
+    </>
+  )
+}
+
 const ExpensesPage = () => {
   const [page, setPage] = useState(1)
-  const limit = 5
+  const limit = 10
 
   const queryClient = useQueryClient()
   // 支出データとページネーションを取得
@@ -147,6 +219,7 @@ const ExpensesPage = () => {
       reset() // フォームのリセット
       setPage(1) // 最初のページに戻す
       queryClient.invalidateQueries({ queryKey: ["expenses"] })
+      queryClient.invalidateQueries({ queryKey: ["summary"] })
     },
     onError: (error: unknown) => {
       toast.error((error as Error).message)
@@ -168,105 +241,68 @@ const ExpensesPage = () => {
     },
   }
 
-  // カテゴリ別の支出額を集計
-  const categoryData = useMemo(
-    () =>
-      expenses.reduce(
-        (acc, expense) => {
-          if (!acc[expense.category]) {
-            acc[expense.category] = 0
-          }
-          acc[expense.category] += expense.amount
-          return acc
-        },
-        {} as { [key: string]: number },
-      ),
-    [expenses],
-  )
-
   if (isLoading) return <Loader />
   if (isError) return <div>エラー: {(error as Error).message}</div>
 
-  // PieChart用のデータ形式に変換
-  const chartCategoryData = Object.entries(categoryData || {}).map(
-    ([category, amount]) => ({
-      name: category,
-      value: amount,
-    }),
-  )
-
   return (
     <>
-      <div className="container mx-auto flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold mb-4">支出一覧</h1>
+      <div className="container mx-auto flex flex-col gap-6">
+        <h1 className="text-2xl font-semibold mb-4">Expenses</h1>
+        <div className="flex gap-6">
+          {/* summary */}
+          <Card className="mx-auto w-1/3">
+            <ChartContainer />
+          </Card>
 
-        {/* ダッシュボードカード */}
-        <Card className="mx-auto">
-          <div className="p-8">
-            <h2>支出の推移</h2>
+          {/* 支出一覧 */}
+          <Card className="mx-auto w-2/3">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Date</TableHeaderCell>
+                  <TableHeaderCell>Category</TableHeaderCell>
+                  <TableHeaderCell>Description</TableHeaderCell>
+                  <TableHeaderCell>Amount</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {expenses?.map((x) => (
+                  <TableRow key={x.id}>
+                    <TableCell>{x.date}</TableCell>
+                    <TableCell>{x.category}</TableCell>
+                    <TableCell>{x.description}</TableCell>
+                    <TableCell>{x.amount} JPY</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-            <DonutChart
-              className="h-80"
-              data={chartCategoryData}
-              variant="donut"
-              valueFormatter={(number: number) =>
-                `${Intl.NumberFormat("jp").format(number).toString()}円`
-              }
-              onValueChange={(v) => console.log(v)}
-            />
-          </div>
-        </Card>
+            {/* ページネーション */}
+            <div className="flex justify-between mt-12">
+              <Button
+                aria-label="Previous page"
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                disabled={!pager.hasPreviousPage}
+              >
+                前へ
+              </Button>
 
-        {/* 支出一覧 */}
-        <Card className="mx-auto">
-          <table className="min-w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-2 text-left">金額</th>
-                <th className="px-4 py-2 text-left">カテゴリ</th>
-                <th className="px-4 py-2 text-left">説明</th>
-                <th className="px-4 py-2 text-left">日付</th>
-              </tr>
-            </thead>
-            <tbody>
-              {expenses?.map((expense) => (
-                <tr key={expense.id} className="border-t">
-                  <td className="px-4 py-2">{expense.amount} 円</td>
-                  <td className="px-4 py-2">{expense.category}</td>
-                  <td className="px-4 py-2">{expense.description}</td>
-                  <td className="px-4 py-2">{expense.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              <span>
+                ページ {pager.currentPage} / {pager.totalPages}
+              </span>
 
-          {/* ページネーション */}
-          <div className="flex justify-between mt-4">
-            <button
-              aria-label="Previous page"
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              disabled={!pager.hasPreviousPage}
-            >
-              前へ
-            </button>
-
-            <span>
-              ページ {pager.currentPage} / {pager.totalPages}
-            </span>
-
-            <button
-              aria-label="Next page"
-              onClick={() =>
-                setPage((prev) => Math.min(prev + 1, pager.totalPages))
-              }
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              disabled={!pager.hasNextPage}
-            >
-              次へ
-            </button>
-          </div>
-        </Card>
+              <Button
+                aria-label="Next page"
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, pager.totalPages))
+                }
+                disabled={!pager.hasNextPage}
+              >
+                次へ
+              </Button>
+            </div>
+          </Card>
+        </div>
 
         {/* 新規支出作成フォーム */}
         <Card className="mx-auto">
