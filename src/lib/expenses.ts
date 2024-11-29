@@ -87,10 +87,18 @@ let mockExpenses: Expense[] = [
   },
 ]
 
+export const getAllExpenses = () => {
+  // ページネーションの計算
+  const sortedExpenses = mockExpenses.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime() // 降順
+  })
+  return sortedExpenses
+}
+
 export const getExpenses = (page: number, limit: number) => {
   // ページネーションの計算
   const offset = (page - 1) * limit
-  const sortedExpenses = [...mockExpenses].sort((a, b) => {
+  const sortedExpenses = mockExpenses.sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime() // 降順
   })
   return sortedExpenses.slice(offset, offset + limit)
