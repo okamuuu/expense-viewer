@@ -3,6 +3,7 @@ import axios from "axios"
 import toast from "react-hot-toast"
 import { format } from "date-fns"
 import { DotLoader } from "react-spinners"
+import clsx from "clsx"
 
 import {
   useQueryClient,
@@ -28,6 +29,7 @@ import {
 import type { AxiosResponse } from "axios"
 import type { ReactNode } from "react"
 import type { Pager, Expense } from "@/types"
+import { useRouter } from "next/router"
 
 interface ExpenseFormData {
   amount: number
@@ -72,8 +74,9 @@ const fetchExpenses = async ({
 
 const fetchSummary = async () => {
   try {
-    const response: AxiosResponse<{ summary: { [key: string]: number } }> =
-      await axios.get("/api/expenses/summary")
+    const response: AxiosResponse<{
+      summary: { category: string; amount: number }[]
+    }> = await axios.get("/api/expenses/summary")
     await sleep(1500)
     return response.data
   } catch (error) {
@@ -142,11 +145,11 @@ const Loader = () => (
 )
 
 const ChartContainer = () => {
-  // 支出データとページネーションを取得
+  const router = useRouter()
+  const category = router.query.category?.toString()
+
   const { data, isLoading, isError } = useQuery<{
-    summary: {
-      [key: string]: number
-    }
+    summary: { category: string; amount: number }[]
   }>({
     queryKey: ["summary"],
     queryFn: () => fetchSummary(),
@@ -154,28 +157,48 @@ const ChartContainer = () => {
   })
 
   // PieChart用のデータ形式に変換
-  const chartCategoryData = Object.entries(data?.summary || {}).map(
-    ([category, amount]) => ({
-      name: category,
-      value: amount,
-    }),
+  const chartCategoryData = (data?.summary || []).map(
+    ({ category, amount }) => ({ name: category, value: amount }),
   )
 
   if (isError) return <div>error...</div>
 
+  const handleClickDonutChart = (name: string) => {
+    router.push({ query: { category: name } })
+  }
+
   return (
     <>
-      <div className="p-8">
-        <DonutChart
-          className="h-80"
-          data={chartCategoryData}
-          variant="donut"
-          valueFormatter={(number: number) =>
-            `${Intl.NumberFormat("jp").format(number).toString()} JPY`
-          }
-          onValueChange={(v) => console.log(v)}
-        />
+      <div className="flex flex-col gap-6">
+        <h3 className="font-semibold text-gray-900 dark:text-gray-50">
+          summary
+        </h3>
+        <div>
+          <DonutChart
+            className="h-80"
+            data={chartCategoryData}
+            variant="donut"
+            valueFormatter={(number: number) =>
+              `${Intl.NumberFormat("jp").format(number).toString()} JPY`
+            }
+            onValueChange={(value) => handleClickDonutChart(value?.name)}
+          />
+        </div>
+        <Table>
+          <TableBody>
+            {(data?.summary || []).map((x, index) => (
+              <TableRow
+                className={clsx({ "font-bold": category === x.category })}
+                key={index}
+              >
+                <TableCell>{x.category}</TableCell>
+                <TableCell className="text-right">{x.amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
+
       {isLoading && <Loader />}
     </>
   )

@@ -21,16 +21,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     )
   }
 
-  const summary = filteredExpenses.reduce(
-    (acc: { [key: string]: number }, exp) => {
-      if (!acc[exp.category]) {
-        acc[exp.category] = 0
-      }
-      acc[exp.category] += exp.amount
-      return acc
-    },
-    {},
-  )
+  const map = filteredExpenses.reduce((acc: { [key: string]: number }, exp) => {
+    if (!acc[exp.category]) {
+      acc[exp.category] = 0
+    }
+    acc[exp.category] += exp.amount
+    return acc
+  }, {})
+
+  const summary = Object.entries(map)
+    .sort(([, a], [, b]) => b - a) // 値で降順ソート
+    .map(([category, amount]) => ({ category, amount }))
 
   res.status(200).json({ summary })
 }
