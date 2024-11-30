@@ -21,7 +21,7 @@ export const SummaryChartContainer = () => {
   const barListData = (data?.summary || []).map((x) => ({
     name: x.category,
     value: x.amount,
-    color: category === x.category ? "blue" : "gray",
+    color: category && category !== x.category ? "gray" : "blue",
   }))
 
   if (isError) return <div>error...</div>

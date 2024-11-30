@@ -3,6 +3,7 @@ import { SummaryChartContainer } from "@/containers/SummaryChartContainer"
 import { CreateExpenseFormContainer } from "@/containers/CreateExpenseFormContainer"
 
 import { Card } from "@tremor/react"
+import { Modal } from "@/components/Modal"
 
 const ExpensesPage = () => {
   return (
@@ -17,15 +18,12 @@ const ExpensesPage = () => {
 
           {/* 支出一覧 */}
           <Card className="mx-auto w-2/3">
-            <ExpenseListContainer />
+            <div className="flex flex-col gap-6">
+              <CreateExpenseFormContainer />
+              <ExpenseListContainer />
+            </div>
           </Card>
         </div>
-
-        {/* 新規支出作成フォーム */}
-        <Card className="mx-auto">
-          <h2 className="text-xl mt-8 mb-4">新規支出の追加</h2>
-          <CreateExpenseFormContainer />
-        </Card>
       </div>
     </>
   )
