@@ -38,7 +38,10 @@ const fetchExpenses = async ({
   }
 }
 
-export const useExpensesQuery = (params: {
+export const useExpensesQuery = ({
+  page,
+  category,
+}: {
   page: number
   category?: string
 }) => {
@@ -47,8 +50,8 @@ export const useExpensesQuery = (params: {
     expenses: Expense[]
     pager: Pager
   }>({
-    queryKey: ["expenses", params],
-    queryFn: () => fetchExpenses(params),
+    queryKey: ["expenses", { page, category }],
+    queryFn: () => fetchExpenses({ page, category }),
     placeholderData: keepPreviousData,
   })
 }

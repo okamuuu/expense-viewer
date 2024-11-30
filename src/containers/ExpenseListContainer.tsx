@@ -17,9 +17,9 @@ import {
 export const ExpenseListContainer = () => {
   const router = useRouter()
   const category = router.query.category?.toString()
+  const page = Number(router.query.page?.toString()) || 1
 
-  const [page, setPage] = useState(1)
-
+  console.log(category, page)
   const { data, isLoading, isPlaceholderData, isError, error } =
     useExpensesQuery({ page, category })
 
@@ -35,6 +35,23 @@ export const ExpenseListContainer = () => {
 
   if (isLoading) return <Loader />
   if (isError) return <div>エラー: {(error as Error).message}</div>
+
+  const handleClickPrev = () => {
+    const prev = Math.max(page - 1, 1)
+    console.log(prev)
+
+    if (prev > 0) {
+      router.push({ query: { page: prev } })
+    }
+  }
+
+  const handleClickNext = () => {
+    const next = Math.min(page + 1, pager.totalPages)
+    console.log(next)
+    if (next > 1) {
+      router.push({ query: { page: next } })
+    }
+  }
 
   return (
     <>
@@ -63,7 +80,7 @@ export const ExpenseListContainer = () => {
       <div className="flex justify-between mt-12">
         <Button
           aria-label="Previous page"
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          onClick={handleClickPrev}
           disabled={!pager.hasPreviousPage}
         >
           前へ
@@ -75,9 +92,7 @@ export const ExpenseListContainer = () => {
 
         <Button
           aria-label="Next page"
-          onClick={() =>
-            setPage((prev) => Math.min(prev + 1, pager.totalPages))
-          }
+          onClick={handleClickNext}
           disabled={!pager.hasNextPage}
         >
           次へ
