@@ -1,9 +1,10 @@
 import { useState } from "react"
-import axios from "axios"
+import { useRouter } from "next/router"
 import toast from "react-hot-toast"
-import { format } from "date-fns"
 import { DotLoader } from "react-spinners"
-import clsx from "clsx"
+import axios from "axios"
+import { format } from "date-fns"
+// import clsx from "clsx"
 
 import {
   useQueryClient,
@@ -17,19 +18,20 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Button,
   Card,
-  DonutChart,
   Table,
   TableBody,
   TableRow,
   TableCell,
   TableHead,
   TableHeaderCell,
+  DonutChart,
+  BarList,
+  Divider,
 } from "@tremor/react"
 
 import type { AxiosResponse } from "axios"
 import type { ReactNode } from "react"
 import type { Pager, Expense } from "@/types"
-import { useRouter } from "next/router"
 
 interface ExpenseFormData {
   amount: number
@@ -44,26 +46,24 @@ const sleep = (ms: number): Promise<void> => {
 
 const fetchExpenses = async ({
   page,
-  limit,
+  category,
 }: {
   page: number
-  limit: number
+  category?: string
 }) => {
   try {
     const response: AxiosResponse<{ expenses: Expense[]; pager: Pager }> =
       await axios.get("/api/expenses", {
-        params: { page, limit }, // クエリパラメータを渡す
+        params: { page, category }, // クエリパラメータを渡す
       })
-    await sleep(1500)
+    await sleep(500)
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const errorMessage =
         error.response?.data?.message || "Failed to fetch expenses"
       toast.error(errorMessage)
-      throw new Error(
-        error.response?.data?.message || "Failed to fetch expenses",
-      )
+      throw new Error(errorMessage)
     } else {
       const unknownErrorMessage = "An unexpected error occurred"
       toast.error(unknownErrorMessage)
@@ -77,7 +77,7 @@ const fetchSummary = async () => {
     const response: AxiosResponse<{
       summary: { category: string; amount: number }[]
     }> = await axios.get("/api/expenses/summary")
-    await sleep(1500)
+    await sleep(500)
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -102,7 +102,7 @@ const createExpense = async (expense: ExpenseFormData) => {
         "Content-Type": "application/json",
       },
     })
-    await sleep(3000)
+    await sleep(500)
     toast.success("success")
     return response.data
   } catch (error) {
@@ -156,10 +156,18 @@ const ChartContainer = () => {
     placeholderData: keepPreviousData,
   })
 
-  // PieChart用のデータ形式に変換
-  const chartCategoryData = (data?.summary || []).map(
-    ({ category, amount }) => ({ name: category, value: amount }),
-  )
+  // DonutChart用のデータ形式に変換
+  const donutChatData = (data?.summary || []).map(({ category, amount }) => ({
+    name: category,
+    value: amount,
+  }))
+
+  // BarList用のデータ形式に変換
+  const barListData = (data?.summary || []).map((x) => ({
+    name: x.category,
+    value: x.amount,
+    color: category === x.category ? "blue" : "gray",
+  }))
 
   if (isError) return <div>error...</div>
 
@@ -176,7 +184,7 @@ const ChartContainer = () => {
         <div>
           <DonutChart
             className="h-80"
-            data={chartCategoryData}
+            data={donutChatData}
             variant="donut"
             valueFormatter={(number: number) =>
               `${Intl.NumberFormat("jp").format(number).toString()} JPY`
@@ -184,19 +192,10 @@ const ChartContainer = () => {
             onValueChange={(value) => handleClickDonutChart(value?.name)}
           />
         </div>
-        <Table>
-          <TableBody>
-            {(data?.summary || []).map((x, index) => (
-              <TableRow
-                className={clsx({ "font-bold": category === x.category })}
-                key={index}
-              >
-                <TableCell>{x.category}</TableCell>
-                <TableCell className="text-right">{x.amount}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <Divider />
+        <div>
+          <BarList className="h-80" data={barListData} />
+        </div>
       </div>
 
       {isLoading && <Loader />}
@@ -205,8 +204,10 @@ const ChartContainer = () => {
 }
 
 const ExpensesPage = () => {
+  const router = useRouter()
+  const category = router.query.category?.toString()
+
   const [page, setPage] = useState(1)
-  const limit = 10
 
   const queryClient = useQueryClient()
   // 支出データとページネーションを取得
@@ -214,8 +215,8 @@ const ExpensesPage = () => {
     expenses: Expense[]
     pager: Pager
   }>({
-    queryKey: ["expenses", { page, limit }],
-    queryFn: () => fetchExpenses({ page, limit }),
+    queryKey: ["expenses", { page, category }],
+    queryFn: () => fetchExpenses({ page, category }),
     placeholderData: keepPreviousData,
   })
 

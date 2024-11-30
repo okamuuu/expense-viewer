@@ -95,12 +95,15 @@ export const getAllExpenses = () => {
   return sortedExpenses
 }
 
-export const getExpenses = (page: number, limit: number) => {
+export const getExpenses = (page: number, limit: number, category?: string) => {
   // ページネーションの計算
   const offset = (page - 1) * limit
-  const sortedExpenses = mockExpenses.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime() // 降順
-  })
+  const sortedExpenses = mockExpenses
+    .filter((x) => (category ? x.category === category : true))
+    .sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime() // 降順
+    })
+
   return sortedExpenses.slice(offset, offset + limit)
 }
 
