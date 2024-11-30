@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import { DonutChart, BarList, Divider } from "@tremor/react"
 import { Loader } from "@/components/Loader"
 
-import { useSummaryQuery } from "@/hooks/useSummaryQuery"
+import { useSummaryQuery } from "@/features/hooks/useSummaryQuery"
 
 export const SummaryChartContainer = () => {
   const router = useRouter()

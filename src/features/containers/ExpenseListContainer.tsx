@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 
-import { useExpensesQuery } from "@/hooks/useExpensesQuery"
+import { useExpensesQuery } from "@/features/hooks/useExpensesQuery"
 import { Loader } from "@/components/Loader"
 
 import {

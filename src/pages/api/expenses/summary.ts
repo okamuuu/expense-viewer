@@ -1,6 +1,6 @@
 // pages/api/expenses/summary.ts
 
-import { getAllExpenses } from "@/lib/expenses"
+import { getAllExpenses } from "@/features/utils/expenses"
 
 import type { NextApiRequest, NextApiResponse } from "next"
 

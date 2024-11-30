@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { getExpenses, addExpense } from "@/lib/expenses"
+import { getExpenses, addExpense } from "@/features/utils/expenses"
 
 const LIMIT = 10
 

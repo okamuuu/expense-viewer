@@ -1,12 +1,9 @@
 import axios from "axios"
 import toast from "react-hot-toast"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { sleep } from "@/utils/sleep"
 
 import type { AxiosResponse } from "axios"
-
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
 
 const fetchSummary = async () => {
   try {

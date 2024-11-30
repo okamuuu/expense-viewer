@@ -1,4 +1,4 @@
-import type { Expense } from "@/types"
+import type { Expense } from "@/features/types"
 
 let mockExpenses: Expense[] = [
   {

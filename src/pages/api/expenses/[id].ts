@@ -1,4 +1,8 @@
-import { getExpenseById, updateExpense, deleteExpense } from "@/lib/expenses"
+import {
+  getExpenseById,
+  updateExpense,
+  deleteExpense,
+} from "@/features/utils/expenses"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {

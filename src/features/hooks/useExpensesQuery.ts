@@ -1,14 +1,11 @@
 import axios from "axios"
 import toast from "react-hot-toast"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
-import { Expense } from "@/types"
+import { Expense } from "@/features/types"
+import { sleep } from "@/utils/sleep"
 
-import type { AxiosResponse } from "axios"
 import type { Pager } from "@/types"
-
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+import type { AxiosResponse } from "axios"
 
 const fetchExpenses = async ({
   page,
