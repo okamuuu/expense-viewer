@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { Button } from "@tremor/react"
+import { FormContextProvider } from "@/forms/FormContextProvider"
+import { ContextTextInput } from "@/forms/FormContextFields"
 
 interface ExpenseFormData {
   amount: number
@@ -29,11 +30,7 @@ export const CreateExpenseForm = ({
   onSubmit: (values: ExpenseFormData) => void
 }) => {
   // フォームのセットアップ
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ExpenseFormData>({
+  const methods = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
     mode: "onChange",
     defaultValues: {
@@ -42,66 +39,75 @@ export const CreateExpenseForm = ({
   })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="amount" className="block">
-          金額
-        </label>
-        <input
-          {...register("amount")}
-          id="amount"
-          type="text"
-          className="w-full px-4 py-2 border border-gray-300 rounded"
-        />
-        {errors.amount && (
-          <span className="text-red-500">{errors.amount.message}</span>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="category" className="block">
-          カテゴリ
-        </label>
-        <input
-          {...register("category")}
-          id="category"
-          className="w-full px-4 py-2 border border-gray-300 rounded"
-        />
-        {errors.category && (
-          <span className="text-red-500">{errors.category.message}</span>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block">
-          説明
-        </label>
-        <input
-          {...register("description")}
-          id="description"
-          className="w-full px-4 py-2 border border-gray-300 rounded"
-        />
-        {errors.description && (
-          <span className="text-red-500">{errors.description.message}</span>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="date" className="block">
-          日付
-        </label>
-        <input
-          {...register("date")}
-          id="date"
-          type="date"
-          className="w-full px-4 py-2 border border-gray-300 rounded"
-        />
-        {errors.date && (
-          <span className="text-red-500">{errors.date.message}</span>
-        )}
-      </div>
-
-      <Button type="submit">送信</Button>
-    </form>
+    <FormContextProvider methods={methods} onSubmit={onSubmit}>
+      <ContextTextInput label="Amount" name="amount" />
+      <ContextTextInput label="Category" name="category" />
+      <ContextTextInput label="Description" name="description" />
+      <ContextTextInput label="Date" name="date" />
+    </FormContextProvider>
   )
+
+  // return (
+  //   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+  //     <div>
+  //       <label htmlFor="amount" className="block">
+  //         金額
+  //       </label>
+  //       <input
+  //         {...register("amount")}
+  //         id="amount"
+  //         type="text"
+  //         className="w-full px-4 py-2 border border-gray-300 rounded"
+  //       />
+  //       {errors.amount && (
+  //         <span className="text-red-500">{errors.amount.message}</span>
+  //       )}
+  //     </div>
+
+  //     <div>
+  //       <label htmlFor="category" className="block">
+  //         カテゴリ
+  //       </label>
+  //       <input
+  //         {...register("category")}
+  //         id="category"
+  //         className="w-full px-4 py-2 border border-gray-300 rounded"
+  //       />
+  //       {errors.category && (
+  //         <span className="text-red-500">{errors.category.message}</span>
+  //       )}
+  //     </div>
+
+  //     <div>
+  //       <label htmlFor="description" className="block">
+  //         説明
+  //       </label>
+  //       <input
+  //         {...register("description")}
+  //         id="description"
+  //         className="w-full px-4 py-2 border border-gray-300 rounded"
+  //       />
+  //       {errors.description && (
+  //         <span className="text-red-500">{errors.description.message}</span>
+  //       )}
+  //     </div>
+
+  //     <div>
+  //       <label htmlFor="date" className="block">
+  //         日付
+  //       </label>
+  //       <input
+  //         {...register("date")}
+  //         id="date"
+  //         type="date"
+  //         className="w-full px-4 py-2 border border-gray-300 rounded"
+  //       />
+  //       {errors.date && (
+  //         <span className="text-red-500">{errors.date.message}</span>
+  //       )}
+  //     </div>
+
+  //     <Button type="submit">送信</Button>
+  //   </form>
+  // )
 }
