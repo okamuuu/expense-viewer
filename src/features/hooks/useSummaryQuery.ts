@@ -1,5 +1,4 @@
 import axios from "axios"
-import toast from "react-hot-toast"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { sleep } from "@/utils/sleep"
 

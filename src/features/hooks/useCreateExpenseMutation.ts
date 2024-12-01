@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import toast from "react-hot-toast"
 import { Expense, ExpenseFormData } from "@/features/types"
 import { sleep } from "@/utils/sleep"
 
