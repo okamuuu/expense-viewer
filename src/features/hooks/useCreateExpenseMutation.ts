@@ -27,9 +27,5 @@ export const useCreateExpenseMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] })
       queryClient.invalidateQueries({ queryKey: ["summary"] })
     },
-    onError: (error: unknown) => {
-      toast.error((error as Error).message)
-      console.error("Error creating expense:", (error as Error).message)
-    },
   })
 }

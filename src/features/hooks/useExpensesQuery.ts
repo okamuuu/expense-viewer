@@ -25,11 +25,9 @@ const fetchExpenses = async ({
     if (axios.isAxiosError(error)) {
       const errorMessage =
         error.response?.data?.message || "Failed to fetch expenses"
-      toast.error(errorMessage)
       throw new Error(errorMessage)
     } else {
       const unknownErrorMessage = "An unexpected error occurred"
-      toast.error(unknownErrorMessage)
       throw new Error(unknownErrorMessage)
     }
   }

@@ -14,16 +14,11 @@ const fetchSummary = async () => {
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const errorMessage =
-        error.response?.data?.message || "Failed to fetch expenses"
-      toast.error(errorMessage)
       throw new Error(
         error.response?.data?.message || "Failed to fetch expenses",
       )
     } else {
-      const unknownErrorMessage = "An unexpected error occurred"
-      toast.error(unknownErrorMessage)
-      throw new Error(unknownErrorMessage)
+      throw new Error("An unexpected error occurred")
     }
   }
 }

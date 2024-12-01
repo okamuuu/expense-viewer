@@ -8,18 +8,19 @@ import { Button } from "@tremor/react"
 import { useRouter } from "next/router"
 
 import type { ExpenseFormData } from "@/features/types"
+import toast from "react-hot-toast"
 
 export const CreateExpenseFormContainer = () => {
   const [showModal, setShowModal] = useState(false)
   const router = useRouter()
 
-  // 支出を作成するミューテーション
   const { isPending, mutateAsync } = useCreateExpenseMutation()
 
   const onSubmit = async (values: ExpenseFormData) => {
     await mutateAsync(values)
     setShowModal(false)
     router.push({ query: { page: 1 } })
+    toast.success("create expense success")
   }
 
   return (
