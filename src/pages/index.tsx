@@ -4,11 +4,26 @@ import { CreateExpenseFormContainer } from "@/features/containers/CreateExpenseF
 
 import { Card } from "@tremor/react"
 
+import Header from "@/components/Header"
+
 const ExpensesPage = () => {
   return (
-    <>
+    <div className="flex flex-col gap-6">
+      <Header />
+
+      {/* hero */}
       <div className="container mx-auto flex flex-col gap-6">
-        <h1 className="text-2xl font-semibold mb-4">Expenses</h1>
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
+            Expenses
+          </h1>
+          <p className="text-gray-500 sm:text-sm/6 dark:text-gray-500">
+            Monitor daily expenditures
+          </p>
+        </div>
+      </div>
+
+      <div className="container mx-auto flex flex-col gap-6">
         <div className="flex gap-6">
           {/* summary */}
           <Card className="mx-auto w-1/3">
@@ -24,7 +39,7 @@ const ExpensesPage = () => {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
