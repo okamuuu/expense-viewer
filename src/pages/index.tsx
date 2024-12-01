@@ -4,7 +4,7 @@ import { CreateExpenseFormContainer } from "@/features/containers/CreateExpenseF
 
 import { Card } from "@tremor/react"
 
-import Header from "@/components/Header"
+import { Header } from "@/components/Header"
 
 const ExpensesPage = () => {
   return (

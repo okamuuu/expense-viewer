@@ -5,7 +5,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { FormContextProvider } from "@/forms/FormContextProvider"
-import { ContextTextInput } from "@/forms/FormContextFields"
+import { ContextTextInput, ContextDatePicker } from "@/forms/FormContextFields"
 
 interface ExpenseFormData {
   amount: number
@@ -43,7 +43,7 @@ export const CreateExpenseForm = ({
       <ContextTextInput label="Amount" name="amount" />
       <ContextTextInput label="Category" name="category" />
       <ContextTextInput label="Description" name="description" />
-      <ContextTextInput label="Date" name="date" />
+      <ContextDatePicker label="Date" name="date" />
     </FormContextProvider>
   )
 

@@ -2,7 +2,14 @@ import { useState, useEffect } from "react"
 
 import { useFormContext, useController } from "react-hook-form"
 
-import { Text, TextInput, Textarea, Select, SelectItem } from "@tremor/react"
+import {
+  Text,
+  TextInput,
+  Textarea,
+  Select,
+  SelectItem,
+  DatePicker,
+} from "@tremor/react"
 
 const useContextField = (name: string) => {
   // NOTE: useFormContext return undefined if you call it not in FormProvider
@@ -78,35 +85,6 @@ export const ContextTextarea = ({
   )
 }
 
-export const ContexDateInput = ({
-  label,
-  name,
-  placeholder,
-}: {
-  label: string
-  name: string
-  placeholder?: string
-}) => {
-  const { field, errors } = useContextField(name)
-
-  return (
-    <div className="flex flex-col gap-3">
-      <label htmlFor={name}>
-        <Text>{label}</Text>
-      </label>
-      <TextInput
-        id={name}
-        aria-label={label}
-        onChange={field.onChange}
-        value={field.value}
-        placeholder={placeholder}
-        error={!!errors[name]}
-        errorMessage={errors[name]?.message?.toString()}
-      />
-    </div>
-  )
-}
-
 type SelectFieldProps = {
   label: string
   name: string
@@ -155,6 +133,26 @@ export const ContextSelect = ({ label, name, options }: SelectFieldProps) => {
           </SelectItem>
         ))}
       </Select>
+    </div>
+  )
+}
+
+export const ContextDatePicker = ({
+  label,
+  name,
+}: {
+  label: string
+  name: string
+}) => {
+  const { field, errors } = useContextField(name)
+
+  return (
+    <div className="flex flex-col gap-3">
+      <label htmlFor={name}>
+        <Text>{label}</Text>
+      </label>
+      <DatePicker value={new Date(field.value)} onChange={field.onChange} />
+      {errors[name]?.message?.toString()}
     </div>
   )
 }
