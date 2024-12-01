@@ -1,6 +1,6 @@
 import { FormProvider } from "react-hook-form"
 
-import { Button, Divider } from "@tremor/react"
+import { Button } from "@tremor/react"
 
 import type { ReactNode } from "react"
 import type { FieldValues, SubmitHandler, UseFormReturn } from "react-hook-form"
