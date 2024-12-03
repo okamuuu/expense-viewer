@@ -72,7 +72,7 @@ export const ExpenseListContainer = () => {
       </Table>
 
       {/* Pagination */}
-      <div className="flex justify-between mt-12">
+      <div className="flex justify-between">
         <Button
           aria-label="Previous page"
           onClick={handleClickPrev}

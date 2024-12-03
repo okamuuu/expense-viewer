@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { RiAddLine } from "react-icons/ri"
+
 import { CreateExpenseForm } from "@/features/forms/CreateExpenseForm"
 import { Loader } from "@/components/Loader"
 import { ModalCard } from "@/components/ModalCard"
@@ -26,7 +28,13 @@ export const CreateExpenseFormContainer = () => {
   return (
     <>
       <div className="text-right">
-        <Button onClick={() => setShowModal(true)}>create</Button>
+        <Button
+          icon={RiAddLine}
+          iconPosition="right"
+          onClick={() => setShowModal(true)}
+        >
+          Create Expense
+        </Button>
       </div>
       {showModal && (
         <ModalCard onClickOutside={() => setShowModal(false)}>

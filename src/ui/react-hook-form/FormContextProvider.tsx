@@ -28,7 +28,7 @@ export const FormContextProvider = <T extends FieldValues>({
         <div className="flex flex-col gap-6">
           {children}
           {onReset && <ResetButton onReset={onReset} />}
-          <Button type="submit">送信</Button>
+          <Button type="submit">Submit</Button>
         </div>
       </form>
     </FormProvider>

@@ -5,7 +5,6 @@ import { CreateExpenseFormContainer } from "@/features/containers/CreateExpenseF
 import { Card } from "@tremor/react"
 
 import { Header } from "@/components/Header"
-import { CustomPopover } from "@/components/CustomPopover"
 
 const ExpensesPage = () => {
   return (
@@ -14,13 +13,18 @@ const ExpensesPage = () => {
 
       {/* hero */}
       <div className="container mx-auto flex flex-col gap-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
-            Expenses
-          </h1>
-          <p className="text-gray-500 sm:text-sm/6 dark:text-gray-500">
-            Monitor daily expenditures
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
+              Expenses
+            </h1>
+            <p className="text-gray-500 sm:text-sm/6 dark:text-gray-500">
+              Monitor daily expenditures
+            </p>
+          </div>
+          <div>
+            <CreateExpenseFormContainer />
+          </div>
         </div>
       </div>
 
@@ -34,14 +38,8 @@ const ExpensesPage = () => {
           {/* 支出一覧 */}
           <Card className="mx-auto w-2/3">
             <div className="flex flex-col gap-6">
-              <CreateExpenseFormContainer />
               <ExpenseListContainer />
             </div>
-          </Card>
-        </div>
-        <div>
-          <Card>
-            <CustomPopover />
           </Card>
         </div>
       </div>
