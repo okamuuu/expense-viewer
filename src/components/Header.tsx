@@ -7,6 +7,8 @@ import {
 } from "@/ui/radix-ui/NotificationPopover"
 import { Tab, TabGroup, TabList } from "@tremor/react"
 
+import { NotificationList } from "@/components/NotificationList"
+
 const tabClass = "hover:border-b-2 hover:border-gray-300"
 
 export const Header = () => {
@@ -28,7 +30,7 @@ export const Header = () => {
             <div>
               <NotificationIcon hasNew={false} />
               <NotificationPopover>
-                <div>test</div>
+                <NotificationList />
               </NotificationPopover>
             </div>
           </div>

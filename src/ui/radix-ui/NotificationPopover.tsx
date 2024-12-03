@@ -1,4 +1,4 @@
-import * as Popover from "@radix-ui/react-popover"
+import { Popover } from "@radix-ui/themes"
 
 import { RiNotificationLine } from "react-icons/ri"
 
@@ -18,7 +18,9 @@ export const NotificationIcon = ({ hasNew }: { hasNew: boolean }) => (
 export const NotificationPopover = ({ children }: { children: ReactNode }) => (
   <Popover.Root>
     <Popover.Trigger>
-      <NotificationIcon hasNew={true} />
+      <button>
+        <NotificationIcon hasNew={true} />
+      </button>
     </Popover.Trigger>
     <Popover.Content>{children}</Popover.Content>
   </Popover.Root>
