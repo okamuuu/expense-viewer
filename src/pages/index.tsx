@@ -5,6 +5,7 @@ import { CreateExpenseFormContainer } from "@/features/containers/CreateExpenseF
 import { Card } from "@tremor/react"
 
 import { Header } from "@/components/Header"
+import { CustomPopover } from "@/components/CustomPopover"
 
 const ExpensesPage = () => {
   return (
@@ -36,6 +37,11 @@ const ExpensesPage = () => {
               <CreateExpenseFormContainer />
               <ExpenseListContainer />
             </div>
+          </Card>
+        </div>
+        <div>
+          <Card>
+            <CustomPopover />
           </Card>
         </div>
       </div>
