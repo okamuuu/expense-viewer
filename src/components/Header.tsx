@@ -1,7 +1,10 @@
 import React from "react"
 
 import { RiMoneyCnyCircleFill } from "react-icons/ri"
-import { NotificationPopover } from "@/ui/radix-ui/NotificationPopover"
+import {
+  NotificationPopover,
+  NotificationIcon,
+} from "@/ui/radix-ui/NotificationPopover"
 import { Tab, TabGroup, TabList } from "@tremor/react"
 
 const tabClass = "hover:border-b-2 hover:border-gray-300"
@@ -23,6 +26,7 @@ export const Header = () => {
               </div>
             </div>
             <div>
+              <NotificationIcon hasNew={false} />
               <NotificationPopover>
                 <div>test</div>
               </NotificationPopover>
