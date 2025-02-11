@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "prepare": "husky"
   },
-
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@headlessui/tailwindcss": "^0.2.1",

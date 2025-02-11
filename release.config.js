@@ -1,5 +1,4 @@
 module.exports = {
-  repositoryUrl: 'git@github.com:okamuuu/expense-viewer.git',
   branches: ['main'],
   plugins: [
     '@semantic-release/commit-analyzer',
