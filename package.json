@@ -9,10 +9,6 @@
     "lint": "eslint .",
     "prepare": "husky"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:okamuuu/expense-viewer.git"
-  },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@headlessui/tailwindcss": "^0.2.1",
