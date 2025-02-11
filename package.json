@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:okamuuu/expense-viewer.git"
+    "url": "git+ssh://git@github.com/kamuuu/expense-viewer.git"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
