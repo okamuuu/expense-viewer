@@ -18,7 +18,7 @@ module.exports = {
     [
       "@semantic-release/exec",
       {
-        "publish": "echo 'The release version is: ${nextRelease.version}'"
+        "prepare": "echo 'The release version is: ${nextRelease.version}'"
       }
     ]
   ],
