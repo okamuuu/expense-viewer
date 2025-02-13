@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/okamuuu/expense-viewer/compare/v1.1.1...v1.2.0) (2025-02-13)
+
+
+### Features
+
+* あえて feat を使って version をあげる ([5cc6967](https://github.com/okamuuu/expense-viewer/commit/5cc69670c0d605f85176626730cd3a4367ec28a6))
+
 ## [1.1.1](https://github.com/okamuuu/expense-viewer/compare/v1.1.0...v1.1.1) (2025-02-12)
 
 
