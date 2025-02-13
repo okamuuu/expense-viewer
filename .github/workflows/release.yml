@@ -1,11 +1,6 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: ["check-pr-title"]
-    types:
-      - completed
-
   push:
     branches: ["main"] # Ensure push events to main trigger the release
 
