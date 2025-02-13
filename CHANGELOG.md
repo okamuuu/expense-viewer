@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/okamuuu/expense-viewer/compare/v1.7.0...v1.8.0) (2025-02-13)
+
+
+### Features
+
+* lint ([#26](https://github.com/okamuuu/expense-viewer/issues/26)) ([97b46aa](https://github.com/okamuuu/expense-viewer/commit/97b46aa67804c67979667c06d3f504edac549897))
+
 # [1.7.0](https://github.com/okamuuu/expense-viewer/compare/v1.6.0...v1.7.0) (2025-02-13)
 
 
