@@ -2,12 +2,15 @@ name: Release
 
 on:
   pull_request:
-    types: [closed]
+    types: [closed] # Trigger when the PR is closed
+  push:
+    branches:
+      - main # Ensure push events to main trigger the release
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' # mainにマージされた場合のみ実行
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' # Only run if the PR was merged into 'main'
 
     permissions:
       contents: write
