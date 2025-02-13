@@ -1,3 +1,12 @@
+# [1.9.0](https://github.com/okamuuu/expense-viewer/compare/v1.8.0...v1.9.0) (2025-02-13)
+
+
+### Features
+
+* @semantic-release/github ([#27](https://github.com/okamuuu/expense-viewer/issues/27)) ([1953d63](https://github.com/okamuuu/expense-viewer/commit/1953d633e6066d77677d22e12a60d813f183da0a))
+* Add GH_TOKEN ([#28](https://github.com/okamuuu/expense-viewer/issues/28)) ([157888c](https://github.com/okamuuu/expense-viewer/commit/157888c0cc42890d2e2f7a1d6fc3c2cbdcbc3da8))
+* 環境変数 ([#29](https://github.com/okamuuu/expense-viewer/issues/29)) ([9dfee3d](https://github.com/okamuuu/expense-viewer/commit/9dfee3df46328e5f2b7a2cfd379354ca8d6de85f))
+
 # [1.8.0](https://github.com/okamuuu/expense-viewer/compare/v1.7.0...v1.8.0) (2025-02-13)
 
 
