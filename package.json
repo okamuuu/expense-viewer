@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/exec": "^7.0.3",
     "@semantic-release/git": "^10.0.1",
     "@tailwindcss/forms": "^0.5.9",
     "@types/node": "^20",
@@ -45,7 +44,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.7",
-    "lint-staged": "^15.2.10",
+    "lint-staged": "^15.4.3",
     "postcss": "^8.4.49",
     "prettier": "^3.4.1",
     "semantic-release": "^24.2.2",
