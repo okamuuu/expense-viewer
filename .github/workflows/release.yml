@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"] # Ensure push events to main trigger the release
   workflow_run:
-    workflows: ["Validate PR title"]
+    workflows: ["Lint PR"]
     types:
       - completed
 
