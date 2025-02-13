@@ -1,8 +1,15 @@
 module.exports = {
   branches: ['main'],
   plugins: [
-    '@semantic-release/commit-analyzer',
-    '@semantic-release/release-notes-generator',
+    {
+      "path": "@semantic-release/commit-analyzer",
+      "types": [
+        {
+          "type": "pr",
+        }
+      ]
+    },    '@semantic-release/release-notes-generator',
+    
     [
       "@semantic-release/changelog",
       {
