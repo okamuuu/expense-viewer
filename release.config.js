@@ -14,12 +14,6 @@ module.exports = {
       {
         "assets": ["docs/CHANGELOG.md"]
       }
-    ],
-    [
-      "@semantic-release/exec",
-      {
-        "publish": "echo 'The release version is: ${nextRelease.version}'"
-      }
     ]
   ],
 };
