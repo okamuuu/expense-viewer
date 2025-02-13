@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/okamuuu/expense-viewer/compare/v1.6.0...v1.7.0) (2025-02-13)
+
+
+### Features
+
+* workflow_run ([#23](https://github.com/okamuuu/expense-viewer/issues/23)) ([7d2c590](https://github.com/okamuuu/expense-viewer/commit/7d2c590e382fac4e29d16349c85a96b9708c05c7))
+
 # [1.6.0](https://github.com/okamuuu/expense-viewer/compare/v1.5.0...v1.6.0) (2025-02-13)
 
 
