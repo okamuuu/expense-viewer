@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/okamuuu/expense-viewer/compare/v1.3.0...v1.4.0) (2025-02-13)
+
+
+### Features
+
+* version up ([#19](https://github.com/okamuuu/expense-viewer/issues/19)) ([75eea86](https://github.com/okamuuu/expense-viewer/commit/75eea865afa77d554a590063c5a0383bf5b74454))
+
 # [1.3.0](https://github.com/okamuuu/expense-viewer/compare/v1.2.0...v1.3.0) (2025-02-13)
 
 
