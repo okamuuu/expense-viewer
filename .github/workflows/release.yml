@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"] # Ensure push events to main trigger the release
   workflow_run:
-    workflows: ["Lint PR"] # 先に実行された PR タイトルチェックのワークフロー名
+    workflows: ["Validate PR title"]
     types:
       - completed
 
