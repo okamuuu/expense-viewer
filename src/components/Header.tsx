@@ -24,7 +24,7 @@ export const Header = () => {
                 EXPENSE VIEWER
               </div>
               <div className="text-blue-600 text-xs font-medium pt-1">
-                v0.0.1
+                v1.0.0
               </div>
             </div>
             <div>
