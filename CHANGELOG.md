@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/okamuuu/expense-viewer/compare/v1.9.0...v1.9.1) (2025-02-26)
+
+
+### Bug Fixes
+
+* pagination ([bc57c42](https://github.com/okamuuu/expense-viewer/commit/bc57c4286ed62ce9a01b6745d9fb702ded8bfd4c))
+
 # [1.9.0](https://github.com/okamuuu/expense-viewer/compare/v1.8.0...v1.9.0) (2025-02-13)
 
 
