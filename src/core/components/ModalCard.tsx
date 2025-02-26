@@ -1,7 +1,7 @@
-import { useClickOutside } from "@/hooks/useClickOutside"
+import { useClickOutside } from "@/core/hooks/useClickOutside"
 
 import { Card } from "@tremor/react"
-import { Modal } from "@/components/Modal"
+import { Modal } from "@/core/components/Modal"
 
 import type { ReactElement } from "react"
 

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router"
 
 import { useExpensesQuery } from "@/features/hooks/useExpensesQuery"
-import { Loader } from "@/components/Loader"
+import { Loader } from "@/core/components/Loader"
 
 import {
   Button,

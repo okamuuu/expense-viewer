@@ -1,4 +1,4 @@
-import { Modal } from "@/components/Modal"
+import { Modal } from "@/core/components/Modal"
 import { DotLoader } from "react-spinners"
 
 export const Loader = () => (

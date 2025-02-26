@@ -2,8 +2,8 @@ import { useState } from "react"
 import { RiAddLine } from "react-icons/ri"
 
 import { CreateExpenseForm } from "@/features/forms/CreateExpenseForm"
-import { Loader } from "@/components/Loader"
-import { ModalCard } from "@/components/ModalCard"
+import { Loader } from "@/core/components/Loader"
+import { ModalCard } from "@/core/components/ModalCard"
 import { useCreateExpenseMutation } from "@/features/hooks/useCreateExpenseMutation"
 
 import { Button } from "@tremor/react"

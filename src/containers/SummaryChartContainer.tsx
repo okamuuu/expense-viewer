@@ -1,7 +1,7 @@
 import { useRouter } from "next/router"
 
 import { DonutChart, BarList, Divider } from "@tremor/react"
-import { Loader } from "@/components/Loader"
+import { Loader } from "@/core/components/Loader"
 
 import { useSummaryQuery } from "@/features/hooks/useSummaryQuery"
 

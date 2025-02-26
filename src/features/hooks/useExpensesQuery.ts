@@ -1,9 +1,9 @@
 import axios from "axios"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { Expense } from "@/features/types"
-import { sleep } from "@/utils/sleep"
+import { sleep } from "@/core/utils/sleep"
 
-import type { Pager } from "@/types"
+import type { Pager } from "@/core/types"
 import type { AxiosResponse } from "axios"
 
 const fetchExpenses = async ({

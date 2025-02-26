@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
-import { sleep } from "@/utils/sleep"
+import { sleep } from "@/core/utils/sleep"
 
 import type { AxiosResponse } from "axios"
 

@@ -1,33 +1,29 @@
 import React from "react"
 
 import { RiMoneyCnyCircleFill } from "react-icons/ri"
-import {
-  NotificationPopover,
-  NotificationIcon,
-} from "@/ui/radix-ui/NotificationPopover"
+import { NotificationPopover } from "@/ui/radix-ui/NotificationPopover"
 import { Tab, TabGroup, TabList } from "@tremor/react"
 
-import { NotificationList } from "@/components/NotificationList"
+import { NotificationList } from "@/core/components/NotificationList"
 
 const tabClass = "hover:border-b-2 hover:border-gray-300"
 
 export const Header = () => {
   return (
     <header>
-      <div className="flex flex-col">
+      <div className="flex flex-col py-2">
         {/* ロゴとタグ */}
-        <div className="container mx-auto px-2 py-4">
+        <div className="container mx-auto py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-xl font-bold text-gray-800">
-                <RiMoneyCnyCircleFill size="24" />
-                EXPENSE VIEWER
-              </div>
-              <div className="text-blue-600 text-xs font-medium pt-1">
-                v1.0.6
+            <div className="flex items-center gap-1 text-xl font-bold">
+              <RiMoneyCnyCircleFill size="24" />
+              <div>EXPENSE VIEWER</div>
+              <div className="text-blue-600 text-xs font-medium pl-1">
+                v1.0.7
               </div>
             </div>
-            <div>
+
+            <div className="pt-1">
               {/* <NotificationIcon hasNew={false} /> */}
               <NotificationPopover>
                 <NotificationList />
