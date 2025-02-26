@@ -1,5 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { getExpenses, addExpense } from "@/features/utils/expenses"
+import {
+  getAllExpenses,
+  getExpenses,
+  addExpense,
+} from "@/features/utils/expenses"
 
 const LIMIT = 10
 
@@ -15,7 +19,7 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
         Number(LIMIT),
         category?.toString(),
       )
-      const totalItems = 12 // mockデータのアイテム数
+      const totalItems = getAllExpenses(category as string).length
       const totalPages = Math.ceil(totalItems / Number(LIMIT))
       const response = {
         expenses,

@@ -87,11 +87,13 @@ let mockExpenses: Expense[] = [
   },
 ]
 
-export const getAllExpenses = () => {
+export const getAllExpenses = (category?: string) => {
   // ページネーションの計算
-  const sortedExpenses = mockExpenses.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime() // 降順
-  })
+  const sortedExpenses = mockExpenses
+    .filter((x) => (category ? x.category === category : true))
+    .sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime() // 降順
+    })
   return sortedExpenses
 }
 
