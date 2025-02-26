@@ -28,7 +28,7 @@ export const Header = () => {
               </div>
             </div>
             <div>
-              <NotificationIcon hasNew={false} />
+              {/* <NotificationIcon hasNew={false} /> */}
               <NotificationPopover>
                 <NotificationList />
               </NotificationPopover>

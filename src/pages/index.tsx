@@ -1,6 +1,6 @@
-import { ExpenseListContainer } from "@/features/containers/ExpenseListContainer"
-import { SummaryChartContainer } from "@/features/containers/SummaryChartContainer"
-import { CreateExpenseFormContainer } from "@/features/containers/CreateExpenseFormContainer"
+import { ExpenseListContainer } from "@/containers/ExpenseListContainer"
+import { SummaryChartContainer } from "@/containers/SummaryChartContainer"
+import { CreateExpenseFormContainer } from "@/containers/CreateExpenseFormContainer"
 
 import { Card } from "@tremor/react"
 
